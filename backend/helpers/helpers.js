@@ -10,6 +10,17 @@ const userSchema = new mongoose.Schema({
 })
 // collection for signUp
 const userInfo = mongoose.model('signup',userSchema)
+// schema for products
+const productSchema = new mongoose.Schema({
+    name:String,
+    category:String,
+    price:String,
+    imageurl:String
+})
+
+// collection for products
+const productInfo = mongoose.model('prosucts',productSchema)
+
 
 module.exports ={
     addUsers:(body)=>{
@@ -51,5 +62,33 @@ module.exports ={
                 }
             })
         })
-    }
+    },
+    uploadDetails:(name,category,price,url)=>{
+        console.log(name,category,price)
+        return new Promise((resolve,reject)=>{
+            const products = new productInfo({
+                name:name,
+                category:category,
+                price:price,
+                imageurl:url
+            })
+            products.save((err,details)=>{
+                if(err){
+                    console.log(err)
+                }else{
+                    console.log(details)
+                    resolve(details)
+                }
+            })
+        })
+    },
+findProducts:()=>{
+    return new Promise((resolve,reject)=>{
+        productInfo.find().then((response)=>{
+            console.log("sdfdsjfsdhfhshi")
+            console.log(response)
+           resolve(response)
+        })
+    })
+}
 }

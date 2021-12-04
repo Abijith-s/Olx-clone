@@ -3,8 +3,14 @@ const helpers = require('../helpers/helpers')
 var jwt = require('jsonwebtoken');
 var router = express.Router()
 var hlpers = require('../helpers/helpers')
-
-
+const cloudinary = require('cloudinary');
+const { response } = require('express');
+cloudinary.config({ 
+    cloud_name: 'ds1xkcryt', 
+    api_key: '564747678435513', 
+    api_secret: 'YoBWFf9Y3jeb4VhaKaoZr_3ME1w',
+    secure: true
+  });
 
 router.post('/signup',(req,res)=>{
   try {
@@ -63,6 +69,36 @@ router.post('/login',(req,res)=>{
         })
     }
     console.log(token)
+})
+
+router.post("/create",async(req,res)=>{
+    try {
+        console.log("create image")
+        console.log(req.body)
+        const fileStr = req.body.imageUrl
+        const uploadedResponse =await cloudinary.uploader.upload(fileStr,{
+            upload_preset:'dev_setup'
+        }) 
+        console.log(uploadedResponse)
+        let uploads =await helpers.uploadDetails(req.body.name,req.body.category,req.body.price,uploadedResponse.url)
+        console.log("details of products")
+        console.log(uploads)
+        res.json({status:true,data:uploads})
+    } catch (error) {
+        console.log("error    "+error)
+        res.json({status:false})
+    }
+})
+router.get("/products",async(req,res)=>{
+    try {
+        let products = await helpers.findProducts()
+        console.log("respone +++++++++++++++")
+        console.log(products)
+        res.json({data:products})
+        
+    } catch (error) {
+        
+    }
 })
 
 module.exports = router
